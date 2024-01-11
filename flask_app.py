@@ -47,5 +47,5 @@ def del_ble(code):
 
 @app.route('/sample',methods=["POST","GET"])
 def sample():
-    return tags_get()
+    return jsonify(tags_get())
     # heheh
