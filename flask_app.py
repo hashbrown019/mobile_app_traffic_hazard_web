@@ -28,6 +28,7 @@ def tags_get():
     for path in os.listdir(dir_path):
         # check if current path is a file
         if os.path.isfile(os.path.join(dir_path, path)):
+            print(path)
             f = open(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/assets/{path}","r")
             res.append(json.loads(f.read()))
             f.close()
