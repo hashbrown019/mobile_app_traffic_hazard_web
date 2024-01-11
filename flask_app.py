@@ -4,7 +4,7 @@ from flask_cors import CORS,cross_origin
 from flask import Flask, render_template,request, jsonify
 import json, os
 
-for_server = "/home/crisnotbrown/mobile_app_traffic_hazard_web/"
+for_server = "/home/mobile_app_traffic_hazard_web/mobile_app_traffic_hazard_web/"
 
 app = Flask(__name__)
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
@@ -23,12 +23,12 @@ def admin():
 
 def tags_get():
     res = []
-    dir_path = "/home/crisnotbrown/mobile_app_traffic_hazard_web/assets/"
+    dir_path = "/home/mobile_app_traffic_hazard_web/mobile_app_traffic_hazard_web/assets/"
     # Iterate directory
     for path in os.listdir(dir_path):
         # check if current path is a file
         if os.path.isfile(os.path.join(dir_path, path)):
-            f = open(f"/home/crisnotbrown/mobile_app_traffic_hazard_web/assets/{path}","r")
+            f = open(f"/home/mobile_app_traffic_hazard_web/mobile_app_traffic_hazard_web/assets/{path}","r")
             res.append(json.loads(f.read()))
             f.close()
     return(res)
@@ -36,13 +36,13 @@ def tags_get():
 @app.route('/save_ble',methods=["POST","GET"])
 def save_ble():
     codes = request.form['f_code']
-    f = open(f"/home/crisnotbrown/mobile_app_traffic_hazard_web/assets/{codes}","w")
+    f = open(f"/home/mobile_app_traffic_hazard_web/mobile_app_traffic_hazard_web/assets/{codes}","w")
     f.write(json.dumps(dict(request.form)))
     return "finished"
 
 @app.route('/del_ble/<code>',methods=["POST","GET"])
 def del_ble(code):
-    os.remove("/home/crisnotbrown/mobile_app_traffic_hazard_web/assets/"+code)
+    os.remove("/home/mobile_app_traffic_hazard_web/mobile_app_traffic_hazard_web/assets/"+code)
     return "finished"
 
 @app.route('/sample',methods=["POST","GET"])
