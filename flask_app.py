@@ -47,16 +47,5 @@ def del_ble(code):
 
 @app.route('/sample',methods=["POST","GET"])
 def sample():
-    return jsonify([
-        {
-            "latlong" : "7.069281, 125.622102",
-            "name": "Danger construction",
-            "description" : "sample description"
-        },
-        {
-            "latlong" : "7.076725, 125.623693",
-            "name": "Road Rage ahead",
-            "description" : "sample description"
-        },
-    ])
+    return tags_get()
     # heheh
