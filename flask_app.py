@@ -24,9 +24,7 @@ def admin():
 def tags_get():
     res = []
     dir_path = "/home/aljeancadaves555/mobile_app_traffic_hazard_web/assets/"
-    # Iterate directory
     for path in os.listdir(dir_path):
-        # check if current path is a file
         if os.path.isfile(os.path.join(dir_path, path)):
             print(path)
             f = open(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/assets/{path}","r")
