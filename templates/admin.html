@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="format-detection" content="telephone=no">
+		<meta name="msapplication-tap-highlight" content="no">
+		<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+		<link rel="stylesheet" href="../static/css/x.css">
+		<script src="../static/js/Brorn.min.js"></script>
+
+		<script src="../static/js/leaflet.js"></script>
+		<script src="../static/js/leaflet-providers.js"></script>
+		<script src="../static/js/leaflet-routing-machine.js"></script>
+		<script src="../static/js/MAPBOX/mq-map.js"></script>
+		<script src="../static/js/MAPBOX/mq-traffic.js"></script>
+		<link rel="stylesheet" href="../static/css/leaflet.css">
+
+		<style type="text/css">
+			body {
+				padding-left: 200px;
+				padding-right: 200px;
+				margin: 50px;
+			}
+			#map { height: 480px; z-index: 1}
+			.map-default{height:95%;transition: height 0.2s ease-in-out;}
+			.leaflet-control-container,.leaflet-routing-container-hide {display: none;}
+			:root {--leaflet-tile-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);}
+			@media (prefers-color-scheme: dark) {
+				.leaflet-tile {
+					filter: var(--leaflet-tile-filter, none);
+				}
+				.leaflet-container {
+					background: #303030;
+				}
+			}
+		</style>
+		<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+		<script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+	</head>
+	<body>
+		<h1>Admin Panel</h1>
+		<hr>
+
+		<div class="x-container">
+			<b>Map Modes</b><br>
+			<span class="x-text-grey x-tiny">Select map mode is to switch from natiove flat map to 3D</span>
+		</div>
+		<div class="x-container x-padding">
+			<div style="" id="map"></div>
+		</div>
+		<!-- ======================================================= -->
+		<script type="text/javascript">
+			let map_source = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}'
+			let DOMAIN = "http://127.0.0.1:5000"
+			// let DOMAIN = "https://crisnotbrown.pythonanywhere.com/"
+			var coords = []
+			let add_beac = undefined
+			let FLOOR_SEL = 1
+			let map = undefined
+
+			$onload(init_map)
+
+			function init_map(){
+				$print("map loaded")
+				if(map != null) {map.remove(); map = null;SELF_MARKER=undefined }else{}
+
+				map= L.map('map').fitWorld();
+
+				// L.tileLayer.provider('Stadia.AlidadeSmoothDark').addTo(map);
+				TILE = L.tileLayer(map_source, {
+					attribution: 'Traffic.IO',
+					maxZoom: 17,
+					minZoom: 11,
+					tileSize: 512,
+					zoomOffset: -1,
+					id: 'mapbox/streets-v11',
+					accessToken: 'pk.eyJ1IjoiZGlvYW1lIiwiYSI6ImNrbGo1ZDc1aDAxZTQybnBoc2tpZGcxOWoifQ.90lp0SPxVC4Kz113q_Wn9g',
+				})
+				TILE.addTo(map);
+
+				var mapLayer = MQ.mapLayer()
+				L.control.layers({
+					'Map': mapLayer,
+					'Satellite': MQ.satelliteLayer(),
+					'Dark': MQ.darkLayer(),
+					'Light': MQ.lightLayer()
+				}, {
+					'Traffic Flow': MQ.trafficLayer({layers: ['flow']}),
+					'Traffic Incidents': MQ.trafficLayer({layers: ['incidents']})
+				}).addTo(map);
+
+				function init_default_location(e) {
+					samp = {"lat":8.945209,"lng":125.538939}
+					map.setView([samp.lat, samp.lng], 15);
+					SELF_MARKER = L.marker(samp).addTo(map)
+				}
+				init_default_location()
+
+				var markers = []
+				map.on('dblclick', function(e){
+					var code = gen_code(14)
+					println(e)
+					var latlng_ = Object.keys( e.latlng).map( function(key){ return e.latlng[key] }).join(", ")
+					println("MAP DBCLICK")
+					var marker_dialog = $dialog({
+						title : "Set BLE Beacon record for FLoor : 1",
+						content:(`
+							<input disabled class="f_data x-hide" id="f_code" type="text" value='`+code+`''><br>
+							<span>floor</span><br>
+							<span>Name</span><br>
+							<input class="f_data" id="f_name" type="text"><br>
+							<span>description</span><br>
+							<input class="f_data" id="f_description" type="text"><br>
+							<span>Severity</span><br>
+							<input class="f_data" id="f_severe" type="number"><br>
+							<span>Coordinates</span><br>
+							<input disabled class="f_data" id="f_latlng" type="text" value='`+latlng_+`'><br>
+						`),
+						buttons :["save","cancel"],
+						buttons_actions : [function(){
+
+							var data_ = input_to_json("f_data")
+						    var marker = new L.marker(e.latlng).addTo(map);
+						    marker.on('click', function(e){
+						    	var DETAILS = this
+								var latlng = DETAILS.getLatLng()
+								println(DETAILS)
+								println("MARKER CLICK")
+							});
+				    		markers.push(marker)
+				    		marker_dialog.destroy()
+						    marker["SYSTEM_DETAILS"] = data_
+				    		println(markers)
+
+							$send({
+								action : DOMAIN+"/save_ble",
+								mdethod : POST,
+								data : $DATA(data_),
+								func : function(res){
+									println(res)
+									location.reload()
+								},
+								err_dialog : true
+							})
+
+
+						}]
+					})
+					marker_dialog.show()
+				});
+				{% for tag in tags: %}
+				var marker = new L.marker("{{tag['f_latlng']}}".replace(" ","").split(",")).addTo(map);
+				{% endfor %}
+			}
+
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+			// =========================================================================
+
+			function del_beac(vals){
+				$send({
+					action : DOMAIN+"/del_ble/"+vals,
+					mdethod : POST,
+					func : function(res){
+						println(res)
+						location.reload()
+					},
+					err_dialog : true
+				})
+				println(vals)
+				// location.reload()
+
+			}
+
+			// var FLOOR = $ID("floor_plan1")
+			// FLOOR.addEventListener("click", (event) => {
+			// 	const x = event.clientX;
+			// 	const y = event.clientY;
+			// 	const result = FLOOR.positionAndNormalFromPoint(x, y);
+			// 	if (result) {
+			// 		var code = gen_code(14)
+			// 		const { point, normal } = result;
+			// 		println(result)
+			// 		add_beac = $dialog({
+			// 			title : "Set BLE Beacon record for FLoor : 1",
+			// 			content:(`
+			// 				<input disabled class="f_data x-hide" id="f_code" type="text" value='`+code+`''><br>
+			// 				<span>floor</span><br>
+			// 				<input disabled class="f_data" id="f_floor" type="text" value='`+FLOOR_SEL+`''><br>
+			// 				<span>Name</span><br>
+			// 				<input class="f_data" id="f_name" type="text"><br>
+			// 				<span>description</span><br>
+			// 				<input class="f_data" id="f_description" type="text"><br>
+			// 				<span>serial</span><br>
+			// 				<input class="f_data" id="f_serial" type="text"><br>
+			// 				<span>data</span><br>
+			// 				<input class="f_data" id="f_x" type="text" disabled value='`+result.position.x+`'>
+			// 				<input class="f_data" id="f_y" type="text" disabled value='`+result.position.y+`'>
+			// 				<input class="f_data" id="f_z" type="text" disabled value='`+result.position.z+`'>
+			// 			`),
+			// 			buttons :["save","cancel"],
+			// 			buttons_actions : [function(){
+			// 				var data_ = input_to_json("f_data")
+			// 				println(data_)
+			// 				$send({
+			// 					action : DOMAIN+"/save_ble",
+			// 					mdethod : POST,
+			// 					data : $DATA(data_),
+			// 					func : function(res){
+			// 						println(res)
+			// 						location.reload()
+			// 					},
+			// 					err_dialog : true
+			// 				})
+			// 			}]
+			// 		})
+			// 		add_beac.show()
+			// 	}
+			// });
+			// // ===================================================================
+			// // ===================================================================
+			// // const FLOOR = document.querySelector("#floor_plan1");
+			// const annotationClicked = (annotation) => {
+			// 	let dataset = annotation;
+			// 	println(dataset)
+			// 	FLOOR.cameraTarget = dataset.target;
+			// 	FLOOR.cameraOrbit = dataset.orbit;
+			// 	FLOOR.fieldOfView = '45deg';
+			// 	add_beac.destroy()
+			// 	// add_beac.destroy()
+			// }
+
+			// FLOOR.querySelectorAll('button').forEach((hotspot) => {
+			// 	hotspot.addEventListener('hover', () => annotationClicked(hotspot));
+			// });
+			// // =====================================================================
+			// // =====================================================================
+
+			// function ch_floor(floor){
+			// 	println("floor = "+floor)
+			// 	FLOOR_SEL = floor
+			// 	$ID("floor_plan1").src = "https://crisnotbrown.pythonanywhere.com/static/assets/floor/"+floor+".glb"
+			// 	ch_floor_deac(floor)
+			// }
+
+			// function ch_floor_deac(floor){
+			// 	var views = $CLASS("floors")
+			// 	for (var i = 0; i < views.length; i++) {
+			// 		views[i].style.display = "none"
+			// 	}
+			// 	var views = $CLASS("floor_"+floor)
+			// 	for (var i = 0; i < views.length; i++) {
+			// 		views[i].style.display = "block"
+			// 	}
+			// }
+			// ch_floor(1)
+		</script>
+	</body>
+</html>
+
