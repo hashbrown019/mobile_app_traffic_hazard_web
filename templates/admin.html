@@ -131,10 +131,9 @@
 				    		markers.push(marker)
 				    		marker_dialog.destroy()
 						    marker["SYSTEM_DETAILS"] = data_
-				    		println(markers)
 
 							$send({
-								action : '/save_ble",
+								action : "/save_ble",
 								mdethod : POST,
 								data : $DATA(data_),
 								func : function(res){
