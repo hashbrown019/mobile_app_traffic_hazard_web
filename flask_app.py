@@ -23,7 +23,7 @@ def admin():
 
 def tags_get():
     res = []
-    dir_path = "/home/aljeancadaves555/mobile_app_traffic_hazard_web/assets/"
+    dir_path = "./assets/"
     # Iterate directory
     for path in os.listdir(dir_path):
         # check if current path is a file
