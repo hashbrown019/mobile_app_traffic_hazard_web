@@ -42,12 +42,20 @@
 		<h1>Admin Panel</h1>
 		<hr>
 
-		<div class="x-container">
+		<!-- <div class="x-container">
 			<b>Map Modes</b><br>
 			<span class="x-text-grey x-tiny">Select map mode is to switch from natiove flat map to 3D</span>
-		</div>
+		</div> -->
 		<div class="x-container x-padding">
-			<div style="" id="map"></div>
+			<div class="x-col l2 m2 x-padding">
+				<b>List of Hazard areas</b>
+				<input type="search" class="x-input x-round-large x-border" placeholder="Search an area">
+				<div class="x-row" id="area_holder">
+				</div>
+			</div>
+			<div class="x-col l10 m10">
+				<div style="" id="map"></div>
+			</div>
 		</div>
 		<!-- ======================================================= -->
 		<script type="text/javascript">
@@ -104,10 +112,9 @@
 					var latlng_ = Object.keys( e.latlng).map( function(key){ return e.latlng[key] }).join(", ")
 					println("MAP DBCLICK")
 					var marker_dialog = $dialog({
-						title : "Set BLE Beacon record for FLoor : 1",
+						title : "Add Hazard Area",
 						content:(`
 							<input disabled class="f_data x-hide" id="f_code" type="text" value='`+code+`''><br>
-							<span>floor</span><br>
 							<span>Name</span><br>
 							<input class="f_data" id="f_name" type="text"><br>
 							<span>description</span><br>
@@ -148,9 +155,28 @@
 					})
 					marker_dialog.show()
 				});
+				var h_holder = ""
 				{% for tag in tags: %}
-				var marker = new L.marker("{{tag['f_latlng']}}".replace(" ","").split(",")).addTo(map);
+					var marker_ = new L.marker("{{tag['f_latlng']}}".replace(" ","").split(",")).addTo(map);
+
+				    marker_.on('dblclick', function(e){
+				    	var DETAILS = this
+						var latlng = DETAILS.getLatLng()
+						println(DETAILS)
+						println("MARKER CLICK")
+					});
+
+					
+					h_holder += (`
+						<div class="x-card x-wwhite x-padding x-leftbar x-border-red x-hover-red" style="margin-top: 5px;" onclick="map.setView([{{tag['f_latlng']}}], 15);set_details()">
+							<span class="">{{tag['f_name']}}</span><br>
+							<b class="x-tiny"><u>{{tag['f_description']}}</u></b><br>
+							<span class="x-tiny">Severity : <b class="x-">{{tag['f_severe']}}</b></span><br>
+							<i class="x-tiny x-text-grey">{{tag['f_latlng']}}</i><br>
+						</div>
+					`)
 				{% endfor %}
+				$ID("area_holder").innerHTML = h_holder;
 			}
 
 			// =========================================================================
@@ -172,6 +198,10 @@
 			// =========================================================================
 			// =========================================================================
 			// =========================================================================
+
+			function set_details(){
+
+			}
 
 			function del_beac(vals){
 				$send({

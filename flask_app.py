@@ -4,8 +4,6 @@ from flask_cors import CORS,cross_origin
 from flask import Flask, render_template,request, jsonify
 import json, os
 
-for_server = "/home/aljeancadaves555/mobile_app_traffic_hazard_web/"
-
 app = Flask(__name__)
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.secret_key="ahahahah"
@@ -24,10 +22,8 @@ def admin():
 def tags_get():
     res = []
     dir_path = "/home/aljeancadaves555/mobile_app_traffic_hazard_web/assets/"
-    # Iterate directory
     for path in os.listdir(dir_path):
         if os.path.isfile(os.path.join(dir_path, path)):
-            print(path)
             f = open(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/assets/{path}","r")
             res.append(json.loads(f.read()))
             f.close()
@@ -49,3 +45,5 @@ def del_ble(code):
 def sample():
     return jsonify(tags_get())
     # heheh
+    
+for_server = "/home/aljeancadaves555/mobile_app_traffic_hazard_web/"

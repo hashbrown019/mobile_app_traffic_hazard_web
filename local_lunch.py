@@ -22,9 +22,7 @@ def admin():
 def tags_get():
     res = []
     dir_path = "assets/"
-    # Iterate directory
     for path in os.listdir(dir_path):
-        # check if current path is a file
         if os.path.isfile(os.path.join(dir_path, path)):
             f = open(f"assets/{path}","r")
             res.append(json.loads(f.read()))
@@ -46,5 +44,7 @@ def del_ble(code):
 @app.route('/sample',methods=["POST","GET"])
 def sample():
 	return jsonify(tags_get())
+
+    
 if __name__ == '__main__':
 	app.run(debug=True)
