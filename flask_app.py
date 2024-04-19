@@ -72,6 +72,22 @@ def login():
         all_users[fname] = _data
     return jsonify(all_users)
 
+@app.route('/register',methods=["POST","GET"])
+def register():
+
+    
+    f = open(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/assets/{request.form['uname']+"_"+request.form['pswd']}","w")
+    f.write('''
+        {
+            "name" : "'''+request.form['name']+'''",
+            "uname" : "'''+request.form['uname']+'''",
+            "pswd" : "'''+request.form['pswd']+'''",
+            "num" : "'''+request.form['num']+'''",
+        }
+    ''')
+    return "finished"
+    pass
+
 
 
 
