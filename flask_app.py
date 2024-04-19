@@ -77,7 +77,7 @@ def register():
     
     fILE = request.form['uname']+"_"+request.form['pswd']
     f = open(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/users/{fILE}","w")
-    f.write('{"name" : "'+request.form['name']+'", "uname" : "'+request.form['uname']+'","pswd" : "'+request.form['pswd']+'", "num" : "'+request.form['num']+'", }')
+    f.write('{"name" : "'+request.form['name']+'", "uname" : "'+request.form['uname']+'","pswd" : "'+request.form['pswd']+'", "num" : "'+request.form['num']+'"}')
     return "finished"
 
 
