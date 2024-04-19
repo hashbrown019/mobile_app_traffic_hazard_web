@@ -22,7 +22,7 @@
 				padding-right: 200px;
 				margin: 50px;
 			}
-			#map { height: 480px; z-index: 1}
+			#map {  height: 70vh;; z-index: 1}
 			.map-default{height:95%;transition: height 0.2s ease-in-out;}
 			.leaflet-control-container,.leaflet-routing-container-hide {display: none;}
 			:root {--leaflet-tile-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);}
@@ -41,16 +41,11 @@
 	<body>
 		<h1>Admin Panel</h1>
 		<hr>
-
-		<!-- <div class="x-container">
-			<b>Map Modes</b><br>
-			<span class="x-text-grey x-tiny">Select map mode is to switch from natiove flat map to 3D</span>
-		</div> -->
 		<div class="x-container x-padding">
 			<div class="x-col l2 m2 x-padding">
 				<b>List of Hazard areas</b>
 				<input type="search" class="x-input x-round-large x-border" placeholder="Search an area">
-				<div class="x-row" id="area_holder">
+				<div class="x-row" id="area_holder" style="overflow-y:scroll ; height: 60vh;">
 				</div>
 			</div>
 			<div class="x-col l10 m10">

@@ -68,7 +68,7 @@ def login():
     # _data = _file.read()
     for fname in os.listdir(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/users"):
         _file = open("/home/aljeancadaves555/mobile_app_traffic_hazard_web/users/"+fname,"r")
-        _data = json.loads(_file.read())
+        _data = (_file.read())
         all_users[fname] = _data
     return jsonify(all_users)
 
@@ -77,14 +77,7 @@ def register():
     
     fILE = request.form['uname']+"_"+request.form['pswd']
     f = open(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/users/{fILE}","w")
-    f.write('''
-        {
-            "name" : "'''+request.form['name']+'''",
-            "uname" : "'''+request.form['uname']+'''",
-            "pswd" : "'''+request.form['pswd']+'''",
-            "num" : "'''+request.form['num']+'''",
-        }
-    ''')
+    f.write('{"name" : "'+request.form['name']+'", "uname" : "'+request.form['uname']+'","pswd" : "'+request.form['pswd']+'", "num" : "'+request.form['num']+'", }')
     return "finished"
 
 
