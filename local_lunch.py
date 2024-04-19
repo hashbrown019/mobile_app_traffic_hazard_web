@@ -6,7 +6,7 @@ import json, os
 
 app = Flask(__name__)
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
-app.secret_key="blebleblebleble"
+app.secret_key="u43928ru9yuc29y4rcm98"
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['JSON_SORT_KEYS'] = False
@@ -45,6 +45,6 @@ def del_ble(code):
 def sample():
 	return jsonify(tags_get())
 
-    
+
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=True,host="0.0.0.0")

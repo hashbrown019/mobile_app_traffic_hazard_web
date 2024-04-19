@@ -45,5 +45,22 @@ def del_ble(code):
 def sample():
     return jsonify(tags_get())
     # heheh
+
+
+
+@app.route('/getuser',methods=["POST","GET"])
+def getuser():
     
+    all_users = {}
+    # _file = open(c.JSON_PATH,"r")
+    # _data = _file.read()
+    for fname in os.listdir(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/users"):
+        _file = open(c.JSON_PATH+fname,"r")
+        _data = json.loads(_file.read())
+        all_users[fname] = _data
+    return jsonify(all_users)
+
+
+
+
 for_server = "/home/aljeancadaves555/mobile_app_traffic_hazard_web/"
