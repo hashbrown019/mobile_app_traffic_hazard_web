@@ -44,7 +44,7 @@
 		<div class="x-container x-padding">
 			<div class="x-col l2 m2 x-padding">
 				<b>List of Hazard areas</b>
-				<input type="search" class="x-input x-round-large x-border" placeholder="Search an area">
+				<input type="search" class="x-input x-round-large x-border" placeholder="Search an area" onkeyup="search(this.value)">
 				<div class="x-row" id="area_holder" style="overflow-y:scroll ; height: 60vh;">
 				</div>
 			</div>
@@ -63,6 +63,26 @@
 			let map = undefined
 
 			$onload(init_map)
+
+			function search(val){
+				var CARD_H = $CLASS("CARD_H")
+				if(val.length == 0){
+					for (var i = 0; i < CARD_H.length; i++) {
+						CARD_H[i].style.display = "block"
+					}
+				}else{
+
+					for (var i = 0; i < CARD_H.length; i++) {
+						CARD_H[i].style.display = "none"
+					}
+					for (var i = 0; i < CARD_H.length; i++) {
+						println(CARD_H[i].innerText.toLowerCase())
+						if(CARD_H[i].innerText.toLowerCase().includes(val)){
+							CARD_H[i].style.display = "block"
+						}
+					}
+				}
+			}
 
 			function init_map(){
 				$print("map loaded")
@@ -163,7 +183,7 @@
 
 					
 					h_holder += (`
-						<div class="x-card x-wwhite x-padding x-leftbar x-border-red x-hover-red" style="margin-top: 5px;" onclick="map.setView([{{tag['f_latlng']}}], 15);set_details()">
+						<div class="CARD_H x-card x-wwhite x-padding x-leftbar x-border-red x-hover-red" style="margin-top: 5px;" onclick="map.setView([{{tag['f_latlng']}}], 15);set_details()">
 							<span class="">{{tag['f_name']}}</span><br>
 							<b class="x-tiny"><u>{{tag['f_description']}}</u></b><br>
 							<span class="x-tiny">Severity : <b class="x-">{{tag['f_severe']}}</b></span><br>
