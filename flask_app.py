@@ -60,6 +60,18 @@ def getuser():
         all_users[fname] = _data
     return jsonify(all_users)
 
+@app.route('/login',methods=["POST","GET"])
+def login():
+    
+    all_users = {}
+    # _file = open(c.JSON_PATH,"r")
+    # _data = _file.read()
+    for fname in os.listdir(f"/home/aljeancadaves555/mobile_app_traffic_hazard_web/users"):
+        _file = open(c.JSON_PATH+fname,"r")
+        _data = json.loads(_file.read())
+        all_users[fname] = _data
+    return jsonify(all_users)
+
 
 
 
